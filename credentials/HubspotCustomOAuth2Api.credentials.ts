@@ -55,12 +55,19 @@ export class HubspotCustomOAuth2Api implements ICredentialType {
     {
       displayName: 'Scopes',
       name: 'scope',
-      type: 'string',
-      default: 'oauth crm.objects.contacts.read crm.objects.contacts.write',
+      type: 'hidden',
+      default: 'oauth',
       required: true,
       description: 'Space-separated list of OAuth scopes. Must match your HubSpot app configuration exactly.',
       placeholder: 'oauth crm.objects.contacts.read crm.objects.custom.read ...',
       hint: 'Copy the scopes from your HubSpot app settings. Include all scopes your workflows need.',
+    },
+    {
+      displayName: 'Auth URI Query Parameters',
+      name: 'authQueryParameters',
+      type: 'string',
+      default: 'grant_type=authorization_code&scope=oauth crm.objects.contacts.read crm.objects.contacts.write',
+      description: 'Edit the scope= parameter to match your HubSpot app scopes',
     },
     {
       displayName: 'Developer API Key',
