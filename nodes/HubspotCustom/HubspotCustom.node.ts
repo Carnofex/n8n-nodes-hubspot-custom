@@ -336,11 +336,11 @@ export class HubspotCustom implements INodeType {
 
         } else if (operation === 'search') {
           const properties = this.getNodeParameter('properties', i) as string;
-          const filters = this.getNodeParameter('filters', i) as string;
+          const filters = this.getNodeParameter('filters', i) as unknown as string;
           const returnAll = this.getNodeParameter('returnAll', i) as boolean;
           const limit = this.getNodeParameter('limit', i) as number;
 
-          const body: Record<string, unknown> = {
+          const body: import('n8n-workflow').IDataObject = {
             limit,
             filterGroups: [{ filters: JSON.parse(filters) }],
           };
@@ -419,7 +419,7 @@ export class HubspotCustom implements INodeType {
         }
 
         const executionData = this.helpers.constructExecutionMetaData(
-          this.helpers.returnJsonArray(responseData as Record<string, unknown>),
+          this.helpers.returnJsonArray(responseData as unknown as INodeExecutionData[]),
           { itemData: { item: i } },
         );
         returnData.push(...executionData);
@@ -445,8 +445,8 @@ async function hubspotApiRequest(
   this: IExecuteFunctions,
   method: IHttpRequestMethods,
   endpoint: string,
-  body: Record<string, unknown> = {},
-  qs: Record<string, unknown> = {},
+  body: import('n8n-workflow').IDataObject = {},
+  qs: import('n8n-workflow').IDataObject = {},
 ): Promise<Record<string, unknown>> {
   const options: IHttpRequestOptions = {
     method,
