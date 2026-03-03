@@ -5,6 +5,7 @@ import type {
   INodeTypeDescription,
   IHttpRequestMethods,
   IHttpRequestOptions,
+  IDataObject,
 } from 'n8n-workflow';
 import { NodeOperationError } from 'n8n-workflow';
 
@@ -445,12 +446,19 @@ async function hubspotApiRequest(
   this: IExecuteFunctions,
   method: IHttpRequestMethods,
   endpoint: string,
-  body: import('n8n-workflow').IDataObject = {},
-  qs: import('n8n-workflow').IDataObject = {},
+  body: IDataObject = {},
+  qs: IDataObject = {},
 ): Promise<Record<string, unknown>> {
+  const credentials = await this.getCredentials('oAuth2Api');
+  const token = credentials.oauthTokenData as { access_token: string };
+
   const options: IHttpRequestOptions = {
     method,
     url: `https://api.hubapi.com${endpoint}`,
+    headers: {
+      'Authorization': `Bearer ${token.access_token}`,
+      'Content-Type': 'application/json',
+    },
     qs,
     body,
     json: true,
@@ -461,11 +469,7 @@ async function hubspotApiRequest(
   }
 
   try {
-    return await this.helpers.httpRequestWithAuthentication.call(
-      this,
-      'oAuth2Api',
-      options,
-    );
+    return await this.helpers.httpRequest(options);
   } catch (error) {
     throw new NodeOperationError(this.getNode(), error as Error);
   }
