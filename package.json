@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-hubspot-custom",
-  "version": "0.1.1",
+  "version": "0.2.1",
   "description": "n8n node for HubSpot with configurable OAuth2 scopes - supports custom objects",
   "keywords": [
     "n8n-community-node-package",
@@ -31,9 +31,7 @@
   ],
   "n8n": {
     "n8nNodesApiVersion": 1,
-    "credentials": [
-      "dist/credentials/HubspotCustomOAuth2Api.credentials.js"
-    ],
+    "credentials": [],
     "nodes": [
       "dist/nodes/HubspotCustom/HubspotCustom.node.js"
     ]
