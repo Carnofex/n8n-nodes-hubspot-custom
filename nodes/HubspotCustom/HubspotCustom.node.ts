@@ -450,13 +450,18 @@ async function hubspotApiRequest(
   qs: IDataObject = {},
 ): Promise<Record<string, unknown>> {
   const credentials = await this.getCredentials('oAuth2Api');
-  const token = credentials.oauthTokenData as { access_token: string };
+  const oauthTokenData = credentials.oauthTokenData as {
+    access_token: string;
+    refresh_token: string;
+    expires_in: number;
+  };
 
+  // Try with current token first
   const options: IHttpRequestOptions = {
     method,
     url: `https://api.hubapi.com${endpoint}`,
     headers: {
-      'Authorization': `Bearer ${token.access_token}`,
+      'Authorization': `Bearer ${oauthTokenData.access_token}`,
       'Content-Type': 'application/json',
     },
     qs,
@@ -470,7 +475,23 @@ async function hubspotApiRequest(
 
   try {
     return await this.helpers.httpRequest(options);
-  } catch (error) {
+  } catch (error: any) {
+    // If 401, try refreshing the token
+    if (error?.response?.status === 401 || error?.statusCode === 401) {
+      const refreshResponse = await this.helpers.httpRequest({
+        method: 'POST',
+        url: 'https://api.hubapi.com/oauth/v1/token',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `grant_type=refresh_token&client_id=${credentials.clientId}&client_secret=${credentials.clientSecret}&refresh_token=${oauthTokenData.refresh_token}`,
+      }) as { access_token: string };
+
+      options.headers = {
+        'Authorization': `Bearer ${refreshResponse.access_token}`,
+        'Content-Type': 'application/json',
+      };
+
+      return await this.helpers.httpRequest(options);
+    }
     throw new NodeOperationError(this.getNode(), error as Error);
   }
 }
