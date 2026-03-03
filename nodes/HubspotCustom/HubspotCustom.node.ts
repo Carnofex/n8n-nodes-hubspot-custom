@@ -30,7 +30,7 @@ export class HubspotCustom implements INodeType {
     outputs: ['main'],
     credentials: [
       {
-        name: 'hubspotCustomOAuth2Api',
+        name: 'oAuth2Api',
         required: true,
       },
     ],
@@ -463,7 +463,7 @@ async function hubspotApiRequest(
   try {
     return await this.helpers.httpRequestWithAuthentication.call(
       this,
-      'hubspotCustomOAuth2Api',
+      'oAuth2Api',
       options,
     );
   } catch (error) {
