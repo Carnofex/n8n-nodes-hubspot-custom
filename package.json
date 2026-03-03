@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-hubspot-custom",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "n8n node for HubSpot with configurable OAuth2 scopes - supports custom objects",
   "keywords": [
     "n8n-community-node-package",
